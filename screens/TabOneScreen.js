@@ -1,35 +1,29 @@
-import { StyleSheet } from "react-native";
-
-import EditScreenInfo from "../components/EditScreenInfo";
-import { Text, View } from "../components/Themed";
+import { StyleSheet, ScrollView } from "react-native";
+import ProductListScreen from "../components/Home/ProductList/ProductScreen";
+import HorizontalProductSlider from "../components/Home/HorizontalProductSlider/HorizontalProductSlider";
+import GroceryAndKitchenScreen from "../components/Home/Design3/Design3";
+import HomeHeader from "../components/Home/HomeHeader/HomeHeader";
+import CategoryBar from "../components/Home/CategoryBar/CategoryBar";
 
 export default function TabOneScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      />
-      <EditScreenInfo path="/screens/TabOneScreen.tsx" />
-    </View>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      <HomeHeader />
+      <CategoryBar />
+      <ProductListScreen />
+      <HorizontalProductSlider />
+      <GroceryAndKitchenScreen />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: "#fff",
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
+  contentContainer: {
+    padding: 0,
+    marginTop:30
   },
 });

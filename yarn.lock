@@ -1363,6 +1363,11 @@
     postcss "~8.4.32"
     resolve-from "^5.0.0"
 
+"@expo/metro-runtime@*", "@expo/metro-runtime@~4.0.1":
+  version "4.0.1"
+  resolved "https://registry.npmjs.org/@expo/metro-runtime/-/metro-runtime-4.0.1.tgz"
+  integrity sha512-CRpbLvdJ1T42S+lrYa1iZp1KfDeBp4oeZOK3hdpiS5n0vR0nhD6sC1gGF0sTboCTp64tLteikz5Y3j53dvgOIw==
+
 "@expo/osascript@^2.1.5":
   version "2.1.5"
   resolved "https://registry.npmjs.org/@expo/osascript/-/osascript-2.1.5.tgz"
