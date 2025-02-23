@@ -1,147 +1,93 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 
-const categories = [
-  { id: '1', name: 'Art and Design', icon: 'https://bejiness.com/home/bejiness-logo.png' },
-  { id: '2', name: 'Auto and Vehicles', icon: 'https://bejiness.com/home/bejiness-logo.png' },
-  { id: '3', name: 'Beauty', icon: 'https://bejiness.com/home/bejiness-logo.png' },
-  { id: '4', name: 'Books and Reference', icon: 'https://bejiness.com/home/bejiness-logo.png' },
-  { id: '5', name: 'Business', icon: 'https://bejiness.com/home/bejiness-logo.png' },
-  { id: '6', name: 'Comics', icon: 'https://bejiness.com/home/bejiness-logo.png' },
-  { id: '7', name: 'Communication', icon: 'https://bejiness.com/home/bejiness-logo.png' },
-  { id: '8', name: 'Dating', icon: 'https://bejiness.com/home/bejiness-logo.png' },
-  { id: '9', name: 'Education', icon: 'https://bejiness.com/home/bejiness-logo.png' },
-  { id: '10', name: 'Entertainment', icon: 'https://bejiness.com/home/bejiness-logo.png' },
-];
+const CategoryBar = ({ highlightButton }) => {
+  const categories = [
+    'all', 'Agri products & Equipments', 'Apparel & Fashion', 'Automobile Spares & parts',
+    'Bags and Luggage', 'Beauty, Cosmetics & Care', 'Books, Stationery & Office supplies',
+    'Chemicals, dyes & solvents', 'Construction supplies', 'Drip Irrigation', 'Electricals & lights',
+    'Electronics & Computers', 'Footwear', 'Furniture & Interior Decorative', 'Hardware & paints',
+    'Home & kitchen appliances', 'Industrial equipments', 'Submersible motors & pumps', 'Tiles & Ceramics'
+  ];
 
-export default function CategoryBar() {
+  const imageSources = [
+    'https://rukminim1.flixcart.com/flap/128/128/image/69c6589653afdb9a.png?q=100',
+    'https://bejiness.com/category-img/agri-pump.png', 
+    'https://bejiness.com/category-img/t-shirt.png', 
+    'https://bejiness.com/category-img/automobile.png',
+    'https://bejiness.com/category-img/luggage.png',
+    'https://bejiness.com/category-img/cosmetics%20.png', 
+    'https://bejiness.com/category-img/stationary.png',
+    'https://bejiness.com/category-img/chemicals.png',
+     'https://bejiness.com/category-img/construction.png', 
+    'https://bejiness.com/category-img/Drip-irrigation.png',
+    'https://bejiness.com/category-img/electrical.png', 
+    'https://rukminim1.flixcart.com/flap/128/128/image/69c6589653afdb9a.png?q=100',
+    'https://bejiness.com/category-img/footware.png', 
+    'https://bejiness.com/category-img/furniture.png', 
+    'https://bejiness.com/category-img/hardware.png',
+
+    'https://bejiness.com/category-img/appliances.png',
+     'https://bejiness.com/category-img/equipment.png', 
+    'https://bejiness.com/category-img/submersible-motors-and-pumps.png',
+    'https://bejiness.com/category-img/tiles.png'
+  ];
+
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const scrollRef = useRef();
+
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category);
+    highlightButton(category);
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      {/* Header */}
-      {/* <View style={styles.headerContainer}> */}
-        {/* <Text style={styles.headerText}>bejiness Appstore</Text> */}
-        {/* <Ionicons name="person-circle-outline" size={30} color="#fff" /> */}
-      {/* </View> */}
-
-      {/* Search Bar */}
-      {/* <View style={styles.searchContainer}>
-        <Text style={styles.searchText}>Enjoy the latest experience</Text>
-        <TouchableOpacity style={styles.updateButton}>
-          <Text style={styles.updateButtonText}>Update</Text>
-        </TouchableOpacity>
-      </View> */}
-
-      {/* Category Navigation */}
-      <View style={styles.navBar}>
-        <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navItemText}>Featured</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navItemText}>Top Charts</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.navItem, styles.activeNavItem]}>
-          <Text style={styles.activeNavItemText}>Categories</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Category Grid */}
-      <View style={styles.categoryGrid}>
-        {categories.map((category) => (
-          <TouchableOpacity key={category.id} style={styles.categoryCard}>
-            <Image source={{ uri: category.icon }} style={styles.categoryIcon} />
-            <Text style={styles.categoryName}>{category.name}</Text>
+    <View style={styles.container}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        ref={scrollRef}
+        contentContainerStyle={styles.scrollContainer}
+      >
+        {categories.map((category, index) => (
+          <TouchableOpacity key={index} style={styles.categoryItem} onPress={() => handleCategoryClick(category)}>
+            <Image source={{ uri: imageSources[index] }} style={styles.categoryImage} />
+            <Text style={[styles.categoryText, selectedCategory === category && styles.selectedCategoryText]}>
+              {category}
+            </Text>
           </TouchableOpacity>
         ))}
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    backgroundColor: '#121212',
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    backgroundColor: '#1f1f1f',
-  },
-  headerText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#2c2c2c',
-    padding: 12,
-    margin: 16,
-    borderRadius: 8,
-  },
-  searchText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  updateButton: {
+    paddingVertical: 10,
     backgroundColor: '#fff',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 8,
   },
-  updateButtonText: {
-    fontWeight: 'bold',
-    color: '#000',
+  scrollContainer: {
+    paddingHorizontal: 10,
   },
-  navBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 12,
-    backgroundColor: '#1f1f1f',
-  },
-  navItem: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  navItemText: {
-    color: '#888',
-    fontSize: 14,
-  },
-  activeNavItem: {
-    borderBottomColor: '#fff',
-    borderBottomWidth: 2,
-  },
-  activeNavItemText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    padding: 16,
-  },
-  categoryCard: {
-    width: '40%',
-    margin: 8,
+  categoryItem: {
     alignItems: 'center',
-    backgroundColor: '#1f1f1f',
-    borderRadius: 8,
-    padding: 12,
+    marginRight: 15,
   },
-  categoryIcon: {
-    width: 40,
-    height: 40,
-    marginBottom: 8,
+  categoryImage: {
+    width: 60,
+    height: 60,
+    resizeMode: 'contain',
   },
-  categoryName: {
-    color: '#fff',
-    fontSize: 14,
+  categoryText: {
+    fontSize: 12,
+    marginTop: 5,
     textAlign: 'center',
   },
+  selectedCategoryText: {
+    color: 'blue',
+    fontWeight: 'bold',
+  },
 });
+
+export default CategoryBar;

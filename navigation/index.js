@@ -1,5 +1,4 @@
-// If you are not familiar with React Navigation, check out the "Fundamentals" guide:
-// https://reactnavigation.org/docs/getting-started
+import React from "react";
 import {
   DarkTheme,
   DefaultTheme,
@@ -10,26 +9,41 @@ import { createStackNavigator } from "@react-navigation/stack";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
 import LinkingConfiguration from "./LinkingConfiguration";
+import LoginScreen from "../screens/LoginScreen";
+import { AuthProvider, useAuth } from "../context/AuthContext";
+import ProductDetailScreen from "../screens/ProductDetailScreen";
 
 export default function Navigation({ colorScheme }) {
   return (
-    <NavigationContainer
-      linking={LinkingConfiguration}
-      theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-    >
-      <RootNavigator />
-    </NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer
+        linking={LinkingConfiguration}
+        theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+      >
+        <RootNavigator />
+      </NavigationContainer>
+    </AuthProvider>
   );
 }
 
-// A root stack navigator is often used for displaying modals on top of all other content
-// Read more here: https://reactnavigation.org/docs/modal
 const Stack = createStackNavigator();
 
 function RootNavigator() {
+  const { isLoggedIn } = useAuth();
+
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Root" component={BottomTabNavigator} />
+      {/* Default Screen */}
+        <Stack.Screen name="Root" component={BottomTabNavigator} />
+      
+      {/* Product Detail Screen */}
+      <Stack.Screen
+        name="ProductDetail"
+        component={ProductDetailScreen}
+        options={{ title: 'Product Details' }}
+      />
+
+      {/* Not Found Screen */}
       <Stack.Screen
         name="NotFound"
         component={NotFoundScreen}

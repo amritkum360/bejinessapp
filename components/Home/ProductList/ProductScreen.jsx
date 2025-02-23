@@ -1,67 +1,110 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, TextInput } from 'react-native';
-
-const productList = [
-  { id: '1', name: 'Amul Gold Full Cream Fresh Milk', price: 67, size: '1L', image: 'https://bejiness.com/home/bejiness-logo.png', deliveryTime: '6 Mins' },
-  { id: '2', name: 'Amul Salted Butter', price: 60, size: '100g', image: 'https://bejiness.com/home/bejiness-logo.png', deliveryTime: '6 Mins' },
-  { id: '3', name: 'Fortune Kachi Ghani Mustard Oil', price: 158, mrp: 195, discount: 37, size: '1L', image: 'https://bejiness.com/home/bejiness-logo.png', deliveryTime: '6 Mins' },
-  { id: '4', name: 'Amul Masti Dahi Pouch', price: 35, size: '400g', image: 'https://bejiness.com/home/bejiness-logo.png', deliveryTime: '6 Mins' },
-  { id: '5', name: 'Kurkure Masala Munch', price: 20, size: '78g', image: 'https://bejiness.com/home/bejiness-logo.png', deliveryTime: '6 Mins' },
-  { id: '6', name: 'Aashirvaad Atta - Shudh Chakki Atta', price: 455, mrp: 485, discount: 30, size: '10kg', image: 'https://bejiness.com/home/bejiness-logo.png', deliveryTime: '6 Mins' },
-];
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome for the heart icon
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 
 const ProductListScreen = () => {
-  const renderProduct = ({ item }) => (
-    <View style={styles.productCard}>
-      <Image source={{ uri: item.image }} style={styles.productImage} />
-      <Text style={styles.productName}>{item.name}</Text>
-      <Text style={styles.productSize}>{item.size}</Text>
-      <Text style={styles.deliveryTime}>{item.deliveryTime}</Text>
-      <View style={styles.priceContainer}>
-        <Text style={styles.productPrice}>₹{item.price}</Text>
-        {item.mrp && <Text style={styles.productMRP}>MRP ₹{item.mrp}</Text>}
-        {item.discount && <Text style={styles.discountBadge}>{item.discount} off</Text>}
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigation = useNavigation(); // Access the navigation object
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch('http://localhost:5000/api/products/search?q=girl');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.success && Array.isArray(data.products)) {
+          // Initialize liked state for each product
+          const productsWithLikes = data.products.slice(0, 6).map(product => ({
+            ...product,
+            liked: false, // Default to not liked
+          }));
+          setProducts(productsWithLikes);
+        } else {
+          console.error('Unexpected response format:', data);
+          setProducts([]);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const handleProductPress = (productId) => {
+    console.log('Product pressed:', productId);
+    navigation.navigate('ProductDetail', { productId }); // Navigate to ProductDetailScreen with productId
+  };
+
+  // Function to handle like/unlike
+  const handleLike = (index) => {
+    const updatedProducts = [...products];
+    updatedProducts[index].liked = !updatedProducts[index].liked; // Toggle liked state
+    setProducts(updatedProducts);
+  };
+
+  const renderProduct = ({ item, index }) => (
+    <TouchableOpacity onPress={() => handleProductPress(item.product_id)}>
+      <View style={styles.productCard}>
+        <TouchableOpacity
+          style={styles.likeButton}
+          onPress={() => handleLike(index)}
+        >
+          <FontAwesome
+            name={item.liked ? 'heart' : 'heart-o'}
+            size={24}
+            color={item.liked ? '#ff6f61' : '#ccc'}
+          />
+        </TouchableOpacity>
+        <Image source={{ uri: item.images }} style={styles.productImage} />
+        <Text style={styles.productName}>{item.product_name}</Text>
+        <Text style={styles.productSize}>{item.unit}</Text>
+        <Text style={styles.deliveryTime}>Delivery: 6 Mins</Text>
+        <View style={styles.priceContainer}>
+          <Text style={styles.productPrice}>₹{item.prices[0].price}</Text>
+          {item.prices[0].mrp && <Text style={styles.productMRP}>MRP ₹{item.prices[0].mrp}</Text>}
+          {item.prices[0].discount && <Text style={styles.discountBadge}>{item.prices[0].discount} off</Text>}
+        </View>
+        <TouchableOpacity style={styles.addToCartButton}>
+          <Text style={styles.addToCartText}>Add to Cart</Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.addToCartButton}>
-        <Text style={styles.addToCartText}>Add to Cart</Text>
-      </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      {/* <TextInput
-        style={styles.searchBar}
-        placeholder="Search for 'milk'"
-        placeholderTextColor="#888"
-      /> */}
       <Text style={styles.sectionTitle}>
         Buy <Text style={styles.sectionHighlight}>Again</Text>
       </Text>
-      <FlatList
-        data={productList}
-        renderItem={renderProduct}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        contentContainerStyle={styles.productList}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#ff6f61" />
+      ) : products.length > 0 ? (
+        <FlatList
+          data={products}
+          renderItem={renderProduct}
+          keyExtractor={(item, index) => index.toString()}
+          numColumns={2}
+          contentContainerStyle={styles.productList}
+        />
+      ) : (
+        <Text style={styles.noProductsText}>No products available.</Text>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
     backgroundColor: '#fff',
     padding: 16,
-  },
-  searchBar: {
-    height: 40,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 20,
@@ -86,6 +129,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
+    position: 'relative', // For positioning the like button
+  },
+  likeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1, // Ensure it's above other elements
   },
   productImage: {
     width: 80,
@@ -140,6 +190,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  noProductsText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#999',
+    marginTop: 20,
   },
 });
 

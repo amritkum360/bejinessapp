@@ -4,6 +4,7 @@ import HorizontalProductSlider from "../components/Home/HorizontalProductSlider/
 import GroceryAndKitchenScreen from "../components/Home/Design3/Design3";
 import HomeHeader from "../components/Home/HomeHeader/HomeHeader";
 import CategoryBar from "../components/Home/CategoryBar/CategoryBar";
+import Category from "../components/Category/Category";
 
 export default function TabOneScreen() {
   return (
@@ -12,6 +13,7 @@ export default function TabOneScreen() {
       <CategoryBar />
       <ProductListScreen />
       <HorizontalProductSlider />
+      <Category />
       <GroceryAndKitchenScreen />
     </ScrollView>
   );
@@ -24,6 +26,5 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 0,
-    marginTop:30
   },
 });
